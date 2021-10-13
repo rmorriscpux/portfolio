@@ -1,5 +1,5 @@
 from .cards import Shoe, Hand
-import json
+import os, json
 
 class Bacc_Hand(Hand):
     # Baccarat hand value - Total of all card values in hand modulo 10.
@@ -68,78 +68,100 @@ class Bacc_Table:
 
         return
 
-if __name__ == "__main__":
-    import os, time
-    def print_table(player, banker, end=False):
-        if os.name == "posix": # Mac/Linux
-            os.system("clear")
-        else: # Windows
-            os.system("cls")
+    # Reset to a full draw shoe. This can be done after every play (continuous shuffle) or once a shoe is exhausted.
+    def reset(self):
+        self.player.discard_all(self.shoe)
+        self.banker.discard_all(self.shoe)
+        self.shoe.shuffle()
+        self.state = "start"
+        return self
 
-        print(str(banker))
-        print(banker.value)
-        print("")
-        print(str(player))
-        print(player.value)
-        if end: # Print Result
-            if player.value > banker.value:
-                if player.natural:
-                    print("Player wins with a natural!")
-                else:
-                    print("Player wins!")
-            elif player.value < banker.value:
-                if banker.natural:
-                    print("Banker wins with a natural!")
-                else:
-                    print("Banker wins!")
-            else:
-                print("Player and Banker Tie!")
+    # Burn cards before the game begins.
+    def burn(self):
+        if self.state == "burn":
+            # Burn first card.
+            first_burn = self.shoe.draw()
+            burn_cards = [first_burn]
 
-        return
+            # Burn additional cards
+            for i in range(0, first_burn.rank['bj_val']):
+                if len(self.shoe.draw_stack) <= 7: # End of shoe.
+                    break
 
-    player = Bacc_Hand()
-    banker = Bacc_Hand()
-    game_shoe = Shoe(8)
-    game_shoe.shuffle()
+                burn_cards.append(self.shoe.draw())
 
-    # Burn
-    burn_first = game_shoe.draw()
+            # Put burn cards in the discard stack.
+            self.shoe.discard(*burn_cards)
 
-    for i in range(0, burn_first.rank['bj_val']):
-        game_shoe.draw()
-
-    # Coup
-    player.draw_card(game_shoe)
-    banker.draw_card(game_shoe)
-    player.draw_card(game_shoe)
-    banker.draw_card(game_shoe)
-
-    print_table(player, banker)
-
-    # Natural check
-    if not (player.natural or banker.natural):
-        # Player Turn. Player draws third card if their total is 5 or less.
-        if player.value <= 5:
-            time.sleep(1)
-            player.draw_card(game_shoe)
-            print_table(player, banker)
+            self.state = "coup"
         
-        # Banker Turn
-        banker_draw = False
-        # When player stands with 2 cards, banker draws third card if their total is 5 or less.
-        if len(player.cards) == 2: 
-            if banker.value <= 5:
-                banker_draw = True
-        else:
-            player_draw_card = player.cards[2].rank['bacc_val']
-            # Banker current total and Player Third Card Conditions
-            banker_draw = ((banker.value <= 2) or
-                (banker.value == 3 and player_draw_card != 8) or
-                (banker.value == 4 and player_draw_card >= 2 and player_draw_card <= 7) or
-                (banker.value == 5 and player_draw_card >= 4 and player_draw_card <= 7) or
-                (banker.value == 6 and player_draw_card >= 6 and player_draw_card <= 7))
-        if banker_draw:
-            time.sleep(1)
-            banker.draw_card(game_shoe)
+        return self
+
+    def coup(self):
+        if self.state == "coup":
+            self.player.draw_card(self.shoe)
+            self.banker.draw_card(self.shoe)
+            self.player.draw_card(self.shoe)
+            self.banker.draw_card(self.shoe)
+
+            # Natural check.
+            if self.player.natural or self.banker.natural:
+                self.state = "end"
+            elif self.player.value <= 5: # No natural, player acts if hand value is 5 or less.
+                self.state = "player_turn"
+            else: # No natural, player has 6 or 7, stands and go to banker turn.
+                self.state = "banker_turn"
+
+        return self
+
+    def player_action(self):
+        if self.state == "player_turn" and self.player.value <= 5:
+            self.player.draw_card(self.shoe)
+            self.state = "banker_turn"
+
+        return self
+
+    def banker_action(self):
+        if self.state == "banker_turn":
+            banker_draw = False
+            if len(self.player.cards) == 2:
+                # Player did not draw. Banker draws based on banker hand value.
+                if self.banker.value <= 5:
+                    banker_draw = True
+            else: # Player did draw. Banker draws based on player third card and banker hand value.
+                player_draw_card = self.player.cards[2].rank['bacc_val']
+                # Banker current total and Player Third Card Conditions
+                banker_draw = ((self.banker.value <= 2) or
+                    (self.banker.value == 3 and player_draw_card != 8) or
+                    (self.banker.value == 4 and player_draw_card >= 2 and player_draw_card <= 7) or
+                    (self.banker.value == 5 and player_draw_card >= 4 and player_draw_card <= 7) or
+                    (self.banker.value == 6 and player_draw_card >= 6 and player_draw_card <= 7))
+
+            if banker_draw:
+                self.banker.draw_card(self.shoe)
+
+            self.state = "end"
+        
+        return self
+
+if __name__ == "__main__":
+    import time
     
-    print_table(player, banker, True)
+    bacc_game = Bacc_Table().reset()
+
+    # Bets placed.
+    bacc_game.state = "burn"
+    bacc_game.burn().coup()
+
+    if bacc_game.state == "player_turn":
+        bacc_game.print_table()
+        bacc_game.player_action()
+        time.sleep(1)
+
+    if bacc_game.state == "banker_turn":
+        bacc_game.print_table()
+        bacc_game.banker_action()
+        if len(bacc_game.banker.cards) == 3:
+            time.sleep(1)
+        
+    bacc_game.print_table()
