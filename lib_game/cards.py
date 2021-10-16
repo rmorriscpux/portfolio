@@ -69,9 +69,9 @@ class Shoe:
         self.draw_stack = []
         self.discard_stack = []
         for c in shoe_dict['draw_stack']:
-            self.draw_stack.append(Card(c['rank'], c['suit']))
+            self.draw_stack.append(Card(c['rank']['name'], c['suit']['name']))
         for c in shoe_dict['discard_stack']:
-            self.discard_stack.append(Card(c['rank'], c['suit']))
+            self.discard_stack.append(Card(c['rank']['name'], c['suit']['name']))
 
         return self
 
@@ -116,7 +116,8 @@ class Hand:
     def rebuild(self, hand_dict):
         self.cards = []
         for c in hand_dict['cards']:
-            self.cards.append(Card(c['rank'], c['suit']))
+            self.cards.append(Card(c['rank']['name'], c['suit']['name']))
+        return self
 
     # Draw cards from a game shoe.
     def draw_card(self, game_shoe, num_cards=1):

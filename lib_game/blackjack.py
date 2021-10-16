@@ -12,7 +12,7 @@ class BJ_Hand(Hand):
     # Soft value: Value of hand if an ace is in it. Doubles as final value.
     @property
     def soft_value(self):
-        # Soft value is the hard value if the hard value is greater than 11.
+        # Soft value is always the hard value if the hard value is greater than 11.
         if self.hard_value > 11:
             return self.hard_value
         # Check if the hand has an ace.
@@ -39,3 +39,8 @@ class Dealer_Hand(BJ_Hand):
             out_str = "## "
         out_str = out_str + Hand.__str__(self)
         return out_str
+
+    def rebuild(self, hand_dict):
+        self.facedown_card = hand_dict['facedown_card']
+        Hand.rebuild(hand_dict)
+        return self

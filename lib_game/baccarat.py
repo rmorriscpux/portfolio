@@ -16,11 +16,11 @@ class Bacc_Hand(Hand):
         return self.value >= 8 and len(self.cards) == 2
 
 class Bacc_Table:
-    def __init__(self):
+    def __init__(self, **bets):
         self.shoe = Shoe(8)
         self.player = Bacc_Hand()
         self.banker = Bacc_Hand()
-        self.bets = {}
+        self.bets = bets
         self.wins = {}
         self.state = 'start'
 
@@ -142,6 +142,28 @@ class Bacc_Table:
 
             self.state = "end"
         
+        return self
+
+    def eval_wins(self):
+        if self.state == "end":
+            # Banker wins, pay banker bet 1 to 1
+            # TODO: Add commission option.
+            if self.banker.value > self.player.value and 'banker' in self.bets:
+                self.wins['banker'] = self.bets['banker'] * 2
+
+            # Player wins, pay player bet 1 to 1
+            if self.player.value > self.banker.value and 'player' in self.bets:
+                self.wins['player'] = self.bets['player'] * 2
+
+            # Tie, pay tie bet 8 to 1, return player or banker bets.
+            if self.player.value == self.banker.value:
+                if 'tie' in self.bets:
+                    self.wins['tie'] = self.bets['tie'] * 9
+                if 'banker' in self.bets:
+                    self.wins['banker'] = self.bets['banker']
+                if 'player' in self.bets:
+                    self.wins['player'] = self.bets['player']
+
         return self
 
 if __name__ == "__main__":
