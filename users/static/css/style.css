@@ -1,0 +1,7 @@
+div.flex-row{
+    display: flex;
+    justify-content: center;
+}
+div.flex-box{
+    flex: 1;
+}

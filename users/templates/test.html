@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Document</title>
+</head>
+<body>
+    <div class="flex-row">
+        <div class="flex-box" id="registration_box">
+            <h2>Registration</h2>
+            <form action="./post/" method="POST" id="reg">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="register">
+                <table class="form-table" id="reg_table">
+                {{ registration_form.as_table }}
+                <tr><th><label for="id_birthdate">Birthdate</label></th><td><input type="date" id="id_birthdate" name="birthdate" max="{{ today.isoformat }}"></td></tr>
+                <tr><td colspan="2"><button type="submit" id="reg_submit">Submit</button></td></tr>
+                </table>
+            </form>
+        </div>
+        <div class="flex-box" id="login_box">
+            <h2>Login</h2>
+            <form action="./post/" method="POST" id="log">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="login">
+                <table class="form-table" id="log_table">
+                {{ login_form.as_table }}
+                <tr><td colspan="2"><button type="submit" id="log_submit">Submit</button></td></tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

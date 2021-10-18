@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+import bcrypt
 
 class UserMgr(models.Manager):
     def register_validation(self, form_data):
@@ -13,7 +14,7 @@ class UserMgr(models.Manager):
         # Email
         if self.filter(email=form_data['email']):
             errors['email'] = "Email already registered."
-        # Password
+        # Password - Consider removing, validation is present in Register form class.
         if len(form_data['password']) < 8:
             errors['password'] = "Password must be at least 8 characters."
         if form_data['password'] != form_data['confirm_pw']:
@@ -29,6 +30,15 @@ class UserMgr(models.Manager):
                 errors['birthdate'] = "Must be at least 21 years old to register."
 
         return errors
+
+    # Check username and password credentials. Returns boolean.
+    def credentials_valid(self, username, password):
+        user_found = self.filter(username=username)
+        if not user_found: # username not in database. Invalid credentials.
+            return False
+
+        # Check password.
+        return bcrypt.checkpw(password.encode(), user_found[0].pw_hash.encode())
 
 class User(models.Model):
     # Unique Fields
