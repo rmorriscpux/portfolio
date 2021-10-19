@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib import messages
 from datetime import date
-from .forms import Login, Register
+from .forms import Login, Register, Modify
 from .models import User
 import bcrypt
 
@@ -85,7 +85,11 @@ def login_page(request):
         messages.error(request, "Already logged in.")
         return redirect("/user/")
 
-    return render(request, "login.html")
+    context = {
+        'login_form' : Login(),
+    }
+
+    return render(request, "login.html", context)
 
 def login_verify(request):
     if request.method != "POST":
@@ -111,13 +115,103 @@ def add_credit(request):
     pass
 
 def modify(request):
-    pass
+    if 'user_id' not in request.session: # Not logged in.
+        return redirect("/user/login/")
+
+    try:
+        current_user = User.objects.get(id=request.session['user_id'])
+    except:
+        # Something weird happened, session contains an invalid user ID. Dump and go to login.
+        messages.error(request, f"User ID not found: {request.session['user_id']}")
+        request.session.flush()
+        return redirect("/user/login/")
+
+    mod_form = Modify(initial={
+        'email' : current_user.email,
+        'first_name' : current_user.first_name,
+        'last_name' : current_user.last_name,
+    })
+
+    context = {
+        'username' : current_user.username,
+        'user_first_name' : current_user.first_name,
+        'user_last_name' : current_user.last_name,
+        'user_email' : current_user.email,
+        'mod_form' : mod_form,
+    }
+    
+    return render(request, "modify.html", context)
 
 def update(request):
-    pass
+    if 'user_id' not in request.session: # Not logged in.
+        return redirect("/user/login/")
+
+    if request.method != "POST": # Didn't get here via form submission.
+        return redirect("/user/edit/")
+
+    try:
+        current_user = User.objects.get(id=request.session['user_id'])
+    except:
+        # Something weird happened, session contains an invalid user ID. Dump and go to login.
+        messages.error(request, f"User ID not found: {request.session['user_id']}")
+        request.session.flush()
+        return redirect("/user/login/")
+
+    mod_form = Modify(request.POST)
+    errors = {}
+
+    if mod_form.is_valid(): # Form sbmission contains all valid fields, which may or may not include a password change.
+        # Look at the password change first. This way if there is a mismatch or other issue, nothing else changes.
+        if mod_form.cleaned_data['new_password']:
+            # A new password was entered, and it was validated against the confirm pw in the form. Now check the old password.
+            if User.objects.credentials_valid(current_user.username, mod_form.cleaned_data['old_password']):
+                current_user.pw_hash = bcrypt.hashpw(mod_form.cleaned_data['new_password'].encode(), bcrypt.gensalt()).decode()
+                current_user.save()
+            else:
+                errors['old_password'] = "Invalid password."
+
+        if not errors: # Either no password change requested, or password successfully changed.
+            current_user.email = mod_form.cleaned_data['email']
+            current_user.first_name = mod_form.cleaned_data['first_name']
+            current_user.last_name = mod_form.cleaned_data['last_name']
+            current_user.save()
+
+    # Compile errors.
+    for field, msgs in mod_form.errors.items():
+        errors.setdefault(field, msgs[0])
+
+    # If errors, convert to messages and go to modify. Otherwise success and go to user page.
+    if errors:
+        for msg in errors.values():
+            messages.error(request, msg)
+        return redirect("/user/edit/")
+    else:
+        messages.success(request, "Profile updated successfully!")
+        return redirect("/user/")
 
 def destroy(request):
-    pass
+    if 'user_id' not in request.session: # Not logged in.
+        return redirect("/user/login/")
+
+    if request.method != "POST": # Didn't get here via form submission.
+        return redirect("/user/edit/")
+
+    try:
+        current_user = User.objects.get(id=request.session['user_id'])
+    except:
+        # Something weird happened, session contains an invalid user ID. Dump and go to login.
+        messages.error(request, f"User ID not found: {request.session['user_id']}")
+        request.session.flush()
+        return redirect("/user/login/")
+
+    if User.objects.credentials_valid(current_user.username, request.POST['password']):
+        current_user.delete()
+        request.session.flush()
+        messages.success(request, "Profile deleted successfully.")
+        return redirect("/user/login/")
+    else:
+        messages.error(request, "Invalid password.")
+        return redirect("/user/edit")
 
 if settings.DEBUG:
     def test(request):
