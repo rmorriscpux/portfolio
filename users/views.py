@@ -112,7 +112,28 @@ def logout(request):
     return redirect("/user/login/")
 
 def add_credit(request):
-    pass
+    if 'user_id' not in request.session: # Not logged in.
+        return redirect("/user/login/")
+
+    try:
+        current_user = User.objects.get(id=request.session['user_id'])
+    except:
+        # Something weird happened, session contains an invalid user ID. Dump and go to login.
+        messages.error(request, f"User ID not found: {request.session['user_id']}")
+        request.session.flush()
+        return redirect("/user/login/")
+
+    if request.method != "POST": # Didn't get here from form.
+        return redirect("/user/")
+
+    if request.POST['credits'] > 0 and request.POST['credits'] <= 100:
+        current_user.credit_balance += request.POST['credits']
+        current_user.save()
+        messages.success(request, "Credits added successfully!")
+    else:
+        messages.error(request, "Invalid add credits.")
+
+    return redirect("/user/")
 
 def modify(request):
     if 'user_id' not in request.session: # Not logged in.
@@ -126,12 +147,14 @@ def modify(request):
         request.session.flush()
         return redirect("/user/login/")
 
+    # Setup form
     mod_form = Modify(initial={
         'email' : current_user.email,
         'first_name' : current_user.first_name,
         'last_name' : current_user.last_name,
     })
 
+    # Setup context (may not need it all)
     context = {
         'username' : current_user.username,
         'user_first_name' : current_user.first_name,
