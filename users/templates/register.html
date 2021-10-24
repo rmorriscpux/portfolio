@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Register</title>
+</head>
+<body>
+    <div class="wrapper">
+        {% if messages %}
+        <div class="flex-row">
+            <div class="flex-box" id="messages_div">
+                <ul id="messages_list">
+                    {% for msg in messages %}
+                    <li{% if msg.tags %} class="{{ msg.tags }}"{% endif %}>{{ msg }}</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        <div class="flex-row">
+            <div class="flex-box" id="registration_div">
+                <h2>Register</h2>
+                <form action="./create/" method="POST" id="registration_form">
+                    {% csrf_token %}
+                    <table class="form-table" id="registration_table">
+                        {{ registration_form.as_table }}
+                        <tr><th><label for="id_birthdate">Birthdate</label></th><td><input type="date" id="id_birthdate" name="birthdate" max="{{ today.isoformat }}" required></td></tr>
+                        <tr><td colspan="2"><button type="submit" id="reg_submit">Register</button></td></tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="flex-box" id="goto_register">
+                <p>Already registered? <a href="../login/">Go to login.</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

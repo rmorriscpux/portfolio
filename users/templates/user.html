@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>User Profile</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="flex-row">
+            <div class="flex-box header">
+                <h3>Welcome, {{ first_name }}!</h3>
+                <ul class="navbar">
+                    <li><a href="./logout/">Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+        {% if messages %}
+        <div class="flex-row">
+            <div class="flex-box" id="messages_div">
+                <ul id="messages_list">
+                    {% for msg in messages %}
+                    <li{% if msg.tags %} class="{{ msg.tags }}"{% endif %}>{{ msg }}</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        <div class="flex-row">
+            <div class="flex-box">
+                <h2>{{ username }}</h2>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

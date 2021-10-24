@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="wrapper">
+        {% if messages %}
+        <div class="flex-row">
+            <div class="flex-box" id="messages_div">
+                <ul id="messages_list">
+                    {% for msg in messages %}
+                    <li{% if msg.tags %} class="{{ msg.tags }}"{% endif %}>{{ msg }}</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        <div class="flex-row">
+            <div class="flex-box" id="login_div">
+                <form action="./verify/" method="POST" id="login_form">
+                    {% csrf_token %}
+                    <table class="form-table" id="login_table">
+                        {{ login_form.as_table }}
+                        <tr><td colspan="2"><button type="submit" id="log_submit">Login</button></td></tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="flex-box" id="goto_register">
+                <p>Or go to <a href="../register/">Register a New Account.</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
