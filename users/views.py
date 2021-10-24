@@ -183,7 +183,7 @@ def update(request):
     mod_form = Modify(request.POST)
     errors = {}
 
-    if mod_form.is_valid(): # Form sbmission contains all valid fields, which may or may not include a password change.
+    if mod_form.is_valid(): # Form submission contains all valid fields, which may or may not include a password change.
         # Look at the password change first. This way if there is a mismatch or other issue, nothing else changes.
         if mod_form.cleaned_data['new_password']:
             # A new password was entered, and it was validated against the confirm pw in the form. Now check the old password.

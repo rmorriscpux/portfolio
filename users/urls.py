@@ -8,6 +8,7 @@ urlpatterns = [
     path('register/create/', views.create),
     path('login/', views.login_page),
     path('login/verify/', views.login_verify),
+    path('logout/', views.logout),
     path('add_credit/', views.add_credit),
     path('edit/', views.modify),
     path('edit/update/', views.update),

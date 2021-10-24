@@ -21,6 +21,7 @@ class UserMgr(models.Manager):
             errors['confirm_pw'] = "Passwords do not match."
         # Birthdate
         try:
+            # Note: This is done for compatibility with Python versions earlier than 3.8.
             date_arr = form_data['birthdate'].split("-")
             birthdate = date(int(date_arr[0]), int(date_arr[1]), int(date_arr[2]))
         except:
@@ -37,15 +38,15 @@ class UserMgr(models.Manager):
         if not user_found: # username not in database. Invalid credentials.
             return False
 
-        # Check password.
+        # Return True on correct password, False on incorrect password.
         return bcrypt.checkpw(password.encode(), user_found[0].pw_hash.encode())
 
 class User(models.Model):
     # Unique Fields
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
-    username = models.CharField(max_length=45)
-    email = models.CharField(max_length=255)
+    username = models.CharField(max_length=45, unique=True)
+    email = models.CharField(max_length=255, unique=True)
     pw_hash = models.CharField(max_length=255)
     birthday = models.DateField()
     credit_balance = models.PositiveIntegerField(default=0)
