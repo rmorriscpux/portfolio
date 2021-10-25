@@ -29,8 +29,28 @@
         </div>
         {% endif %}
         <div class="flex-row">
-            <div class="flex-box">
+            <div class="flex-box" id="user_info">
                 <h2>{{ username }}</h2>
+                <p>{{ user_first_name }} {{ user_last_name }}</p>
+                <p>{{ user_email }}</p>
+                <ul id="user_stats">
+                    <li>Credit Balance: {{ user_credit_balance }}</li>
+                    <li>Games Played: {{ user_games_played }}</li>
+                    <li>Credits Played: {{ user_credits_played }}</li>
+                    <li>Credits Won: {{ user_credits_won }}</li>
+                </ul>
+                <p><a href="./edit/">Edit User Info</a></p>
+            </div>
+        </div>
+        <hr>
+        <div class="flex-row">
+            <div class="flex-box" id="add_credit_div">
+                <h3>Add Credits To Balance</h3>
+                <form action="./add_credit/" method="POST" id="add_credit_form">
+                    {% csrf_token %}
+                    <input type="number" min="1" max="100" name="credits" id="credits">
+                    <button type="submit" id="submit_credits">Add</button>
+                </form>
             </div>
         </div>
     </div>
