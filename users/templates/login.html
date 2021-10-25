@@ -16,12 +16,14 @@
                 <ul id="messages_list">
                     {% for msg in messages %}
                     <li{% if msg.tags %} class="{{ msg.tags }}"{% endif %}>{{ msg }}</li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
         {% endif %}
         <div class="flex-row">
             <div class="flex-box" id="login_div">
+                <h2>User Login</h2>
                 <form action="./verify/" method="POST" id="login_form">
                     {% csrf_token %}
                     <table class="form-table" id="login_table">

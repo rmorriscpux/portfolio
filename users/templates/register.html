@@ -16,6 +16,7 @@
                 <ul id="messages_list">
                     {% for msg in messages %}
                     <li{% if msg.tags %} class="{{ msg.tags }}"{% endif %}>{{ msg }}</li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>

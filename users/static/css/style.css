@@ -1,6 +1,8 @@
 body{
     /* font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; */
     font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
 }
 div.wrapper{
     width: 1000px;
@@ -12,4 +14,10 @@ div.flex-row{
 }
 div.flex-box{
     flex: 1;
+}
+ul#messages_list li.error{
+    color: #ff0000;
+}
+ul#messages_list li.success{
+    color: #007f00;
 }
