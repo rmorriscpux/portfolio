@@ -1,0 +1,113 @@
+body{
+    display: flex;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+div#wrapper{
+    width: 1000px;
+    display: block;
+}
+div.flex-row{
+    margin-top: 10px;
+}
+div.selection-form-item{
+    display: inline-block;
+}
+div#graphic_grid{
+    display: flex;
+}
+div#graphic_grid div.graphic-column{
+    display: inline;
+}
+div#graphic_grid div.graphic-box{
+    display: block;
+    border: 2px solid black;
+    position: relative;
+}
+div.graphic-box span.critter-tooltip{
+    display: none;
+    background-color: #000000;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 110%;
+    left: 0%;
+    width: max-content;
+}
+div.graphic-box span.critter-tooltip::after{
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 32px;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #000000 transparent;
+}
+ul#nav_menu{
+    list-style-type: none;
+}
+ul#nav_menu li{
+    display: inline;
+}
+span.unavail-month{
+    color: #7f7f7f;
+}
+span.avail-month{
+    color: #000000;
+}
+table#list_table{
+    text-align: center;
+    border-collapse: collapse;
+}
+table#list_table tr.header{
+    background-color: #aaaaaa;
+}
+table#list_table tr.row1{
+    background-color: #cccccc;
+}
+table#list_table tr.row2{
+    background-color: #dddddd;
+}
+table#list_table td.list, table#list_table th{
+    padding: 5px;
+}
+table#list_table td.location{
+    max-width: 180px;
+}
+table#active_time{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table#active_time td{
+    text-align: center;
+    border-right: 1px dashed black;
+    border-bottom: 1px solid black;
+    width: 15px;
+    height: 15px;
+}
+table#active_time td.tod{
+    border-right: 1px solid black;
+}
+table#active_time td.active-hour{
+    background-color: #ffff00;
+}
+table#active_time td.inactive-hour{
+    background-color: transparent;
+}
+table.critter_info{
+    border-collapse: collapse;
+}
+table.critter_info th, table.critter_info td{
+    border: 1px solid #ffffff;
+    padding: 3px;
+}
+img.active-img{
+    opacity: 1;
+}
+img.inactive-img{
+    opacity: 0.3;
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% load mathfilters %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/acnh/style.css' %}">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/acnh/info-tooltip.js' %}"></script>
+    <title>Sea Creatures</title>
+</head>
+<body>
+    <div id="wrapper">
+        <div class="flex-row" id="header">
+            <ul id="nav_menu">
+                <li><a href="../bugs/">Bugs</a></li>
+                <li><a href="../fish/">Fish</a></li>
+                <li><a href="../sea_creatures/">Sea Creatures</a></li>
+            </ul>
+        </div>
+        <div class="flex-row" id="selection">
+            <form id="selection_filter" action="./" method="POST">
+                {% csrf_token %}
+                <div class="selection-form-item">
+                    <label for="selected_shadow">SHADOW</label><br>
+                    <select name="selected_shadow" id="selected_shadow">
+                        <option value="">--ALL--</option>
+                        {% for shadow in shadows %}<option value="{{ shadow.size }}"{% ifequal shadow.size current_shadow %} selected{% endifequal %}>{{ shadow.size }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="selection-form-item">
+                    <label for="selected_month">MONTH</label><br>
+                    <select name="selected_month" id="selected_month">
+                        <option value="">--ALL--</option>
+                        {% for month in months %}<option value="{{ month.name }}"{% ifequal month.name current_month %} selected{% endifequal %}>{{ month.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="selection-form-item">
+                    <label for="selected_hour">HOUR</label><br>
+                    <select name="selected_hour" id="selected_hour">
+                        <option value="-1">--ALL--</option>
+                        {% for hour in hours %}<option value="{{ hour.time }}"{% ifequal hour.time_am_pm current_hour %} selected{% endifequal %}>{{ hour.time_am_pm }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="selection-form-item">
+                    <label for="southern_hemi">SOUTHERN</label><br>
+                    <input type="checkbox" id="southern_hemi" name="southern" value="southern"{% if hemisphere == "southern" %} checked{% endif %}>
+                </div>
+                <div class="selection-form-item">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+        <div class="flex-row" id="graphic_grid">
+            <input type="hidden" id="hemisphere" value="{{ hemisphere }}">
+        {% for creature in all_sea_creatures %}
+            {% if forloop.counter|mod:5 == 1 %}<div class="graphic-column" id="graphic_col_{{ forloop.counter|intdiv:5 }}">{% endif %}
+                <div class="graphic-box" id="sea_creature_{{ creature.id }}">
+                    <img alt="{{ creature.name }}" src="{% static 'img/acnh/sea_creatures/'|add:creature.img_name %}" class="critter {% if creature in sea_creatures %}active-img{% else %}inactive-img{% endif %}">
+                    <span class="critter-tooltip"></span>
+                </div>
+            {% if forloop.counter|mod:5 == 0 %}</div>{% endif %}
+        {% endfor %}
+        </div>
+        <div class="flex-row" id="list">
+            <table id="list_table">
+                <tr class="header">
+                    <th>Name</th>
+                    <th>Shadow</th>
+                    <th>Value</th>
+                    <th>Months</th>
+                    <th>Hours</th>
+                </tr>
+                {% for creature in sea_creatures %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td class="list">{{ creature.name }}</td>
+                    <td class="list">{{ creature.shadow.size }}</td>
+                    <td class="list">{{ creature.price }}</td>
+                    <td class="list">
+                        {% for month in months %}
+                        {% if hemisphere == "southern" %}<span class="{% if month.southern in creature.months.all %}avail-month{% else %}unavail-month{% endif %}">{{ month.initial }}</span>
+                        {% else %}<span class="{% if month in creature.months.all %}avail-month{% else %}unavail-month{% endif %}">{{ month.initial }}</span>{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <table id="active_time">
+                            <tr>
+                                <td rowspan="2" class="tod">AM</td>
+                                {% for hour in hours %}{% if forloop.counter0 < 12 %}<td>{{ hour.time_12hr }}</td>
+                                {% endif %}{% endfor %}
+                            </tr>
+                            <tr>
+                                {% for hour in hours %}{% if forloop.counter0 < 12 %}<td class="{% if hour in creature.hours.all %}active-hour{% else %}inactive-hour{% endif %}"></td>
+                                {% endif %}{% endfor %}
+                            </tr>
+                            <tr>
+                                <td rowspan="2" class="tod">PM</td>
+                                {% for hour in hours %}{% if forloop.counter0 >= 12 %}<td>{{ hour.time_12hr }}</td>
+                                {% endif %}{% endfor %}
+                            </tr>
+                            <tr>
+                                {% for hour in hours %}{% if forloop.counter0 >= 12 %}<td class="{% if hour in creature.hours.all %}active-hour{% else %}inactive-hour{% endif %}"></td>
+                                {% endif %}{% endfor %}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>
