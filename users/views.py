@@ -126,8 +126,15 @@ def add_credit(request):
     if request.method != "POST": # Didn't get here from form.
         return redirect("/user/")
 
-    if request.POST['credits'] > 0 and request.POST['credits'] <= 100:
-        current_user.credit_balance += request.POST['credits']
+    if 'credits' not in request.POST:
+        messages.error(request, "Invalid add credits.")
+        return redirect("/user/")
+
+    # Handle input cleaning with jquery on the page itself.
+    credits_to_add = int(request.POST['credits'])
+
+    if credits_to_add > 0 and credits_to_add <= 100:
+        current_user.credit_balance += credits_to_add
         current_user.save()
         messages.success(request, "Credits added successfully!")
     else:
