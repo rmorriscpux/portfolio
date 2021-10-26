@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>User Profile</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="flex-row">
+            <div class="flex-box header">
+                <h3>Welcome, {{ user_first_name }}!</h3>
+                <ul class="navbar">
+                    <li><a href="/user/logout/">Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+        {% if messages %}
+        <div class="flex-row">
+            <div class="flex-box" id="messages_div">
+                <ul id="messages_list">
+                    {% for msg in messages %}
+                    <li{% if msg.tags %} class="{{ msg.tags }}"{% endif %}>{{ msg }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        <div class="flex-row">
+            <div class="flex-box" id="edit_user_info">
+                <h2>{{ username }} - Edit Info</h2>
+                <form action="./update/" method="POST" id="edit_user_form">
+                    {% csrf_token %}
+                    <table class="form-table" id="edit_user_table">
+                        {{ mod_form.as_table }}
+                        <tr><td colspan=2><button type="submit" id="edit_user_submit">Confirm</button></td></tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="flex-row">
+            <div class="flex-box" id="delete_acc_div">
+                <h3>Delete Account</h3>
+                <p>WARNING: This cannot be undone!</p>
+                <p>Password required to delete account.</p>
+                <form action="/user/destroy/" method="POST" id="delete_acc_form">
+                    {% csrf_token %}
+                    <input type="password" id="del_password" name="password">
+                    <button type="submit" id="submit_delete">DELETE ACCOUNT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
