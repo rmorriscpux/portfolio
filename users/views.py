@@ -29,7 +29,7 @@ def user_profile(request):
         'user_credits_won' : current_user.credits_won,
     }
     
-    return render(request, "user.html", context)
+    return render(request, "users/user.html", context)
 
 def register_page(request):
     if 'user_id' in request.session: # Already logged in. Go to user profile page.
@@ -40,7 +40,7 @@ def register_page(request):
         'registration_form' : Register(),
         'today' : date.today(),
     }
-    return render(request, "register.html", context)
+    return render(request, "users/register.html", context)
 
 def create(request):
     if request.method != "POST": # Not from form.
@@ -89,7 +89,7 @@ def login_page(request):
         'login_form' : Login(),
     }
 
-    return render(request, "login.html", context)
+    return render(request, "users/login.html", context)
 
 def login_verify(request):
     if request.method != "POST":
@@ -170,7 +170,7 @@ def modify(request):
         'mod_form' : mod_form,
     }
     
-    return render(request, "modify.html", context)
+    return render(request, "users/modify.html", context)
 
 def update(request):
     if 'user_id' not in request.session: # Not logged in.
@@ -250,7 +250,7 @@ if settings.DEBUG:
             'registration_form' : Register(),
             'today' : date.today(),
         }
-        return render(request, "test.html", context)
+        return render(request, "users/test.html", context)
 
     def test_post(request):
         if request.method == "POST":
@@ -264,6 +264,6 @@ if settings.DEBUG:
             context = {
                 'submit_data' : request.POST
             }
-            return render(request, "test_post.html", context)
+            return render(request, "users/test_post.html", context)
         else:
             return redirect("/user/test/")
