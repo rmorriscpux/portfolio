@@ -47,6 +47,10 @@ class Card:
         else:
             return "Colorless"
 
+    @property
+    def image(self):
+        return f"{self.rank['name']}_{self.suit['name']}.png"
+
 class Shoe:
     # Constructor
     def __init__(self, num_decks=1):
