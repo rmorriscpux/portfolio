@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/user.js' %}"></script>
     <title>User Profile</title>
 </head>
 <body>
@@ -46,7 +48,7 @@
         <hr>
         <div class="flex-row">
             <div class="flex-box" id="add_credit_div">
-                <h3>Add Credits To Balance</h3>
+                <h3>Add Credits To Balance - 100 Max</h3>
                 <form action="./add_credit/" method="POST" id="add_credit_form">
                     {% csrf_token %}
                     <input type="number" min="1" max="100" name="credits" id="credits">
