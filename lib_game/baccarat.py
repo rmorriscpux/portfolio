@@ -15,6 +15,15 @@ class Bacc_Hand(Hand):
     def natural(self):
         return self.value >= 8 and len(self.cards) == 2
 
+    # Pair - First two cards are of the same rank.
+    @property
+    def pair(self):
+        # Sanity check. Can't have a pair without two cards.
+        if len(self.cards) < 2:
+            return False
+
+        return self.cards[0].rank['rank'] == self.cards[1].rank['rank']
+
 class Bacc_Table:
     def __init__(self, **bets):
         self.shoe = Shoe(8)
@@ -163,6 +172,14 @@ class Bacc_Table:
                     self.wins['banker'] = self.bets['banker']
                 if 'player' in self.bets:
                     self.wins['player'] = self.bets['player']
+
+            # Banker pair pays 11 to 1.
+            if self.banker.pair and 'banker_pair' in self.bets:
+                self.wins['banker_pair'] = self.bets['banker_pair'] * 12
+
+            # Player Pair pays 11 to 1.
+            if self.player.pair and 'player_pair' in self.bets:
+                self.wins['player_pair'] = self.bets['player_pair'] * 12
 
         return self
 
