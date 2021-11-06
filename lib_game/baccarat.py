@@ -82,7 +82,7 @@ class Bacc_Table:
         self.player.discard_all(self.shoe)
         self.banker.discard_all(self.shoe)
         self.shoe.shuffle()
-        self.state = "start"
+        self.state = "burn"
         return self
 
     # Burn cards before the game begins.

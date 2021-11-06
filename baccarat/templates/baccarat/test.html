@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="." method="POST" id="test_form">
+        {% csrf_token %}
+        <p><label for="bets[player]">Player</label> <input type="text" id="player_bet" name="bets"></p>
+        <p><label for="bets[banker]">Banker</label> <input type="text" id="banker_bet" name="bets"></p>
+        <p><label for="bets[tie]">Tie</label> <input type="text" id="tie_bet" name="bets"></p>
+        <p><button type="submit">Submit</button></p>
+    </form>
+</body>
+</html>

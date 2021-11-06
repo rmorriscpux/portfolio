@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'home',
     'acnh',
     'users',
+    'baccarat',
     'mathfilters',
     'django.contrib.admin',
     'django.contrib.auth',
