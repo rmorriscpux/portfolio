@@ -37,16 +37,6 @@ class Hour(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-# class MonthMgr(models.Manager):
-#     def all_southern(self):
-#         northern = self.all()
-#         southern = northern[6:12]
-#         southern.extend(northern[0:6])
-#         return southern
-
-#     def get_southern(self, number):
-#         return self.get(number=(number+6)%12)
-
 class Month(models.Model):
     # Unique Fields
     number = models.IntegerField()
